@@ -7,17 +7,49 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
+        printPath()
+        createStudenEntry()
+        
+        listAllStudenEntry()
+    }
+    
+    func printPath(){
+        
+        let path = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: FileManager.SearchPathDomainMask.userDomainMask).first
+        print("path ==>> \(path)")
+        
+    }
+    
+    func createStudenEntry(){
+        let student = Student(context: appDelegate.persistentContainer.viewContext)
+        student.name = "Shweta Patel"
+        student.age = 90
+        
+        appDelegate.saveContext()
+    }
+    func listAllStudenEntry(){
+        
+        let fetchReq = NSFetchRequest<NSFetchRequestResult>(entityName: "Student")
+        fetchReq.predicate = NSPredicate.init(format: "age => 29")
+        let arrStudents = try! managedContext.fetch(fetchReq) as? [Student]
+        
+        for std in arrStudents! {
+            managedContext.delete(std)
+            
+        }
+        appDelegate.saveContext()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+
     }
 
 
